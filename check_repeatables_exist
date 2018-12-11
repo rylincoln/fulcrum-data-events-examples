@@ -1,0 +1,22 @@
+/*Validate a record has at least 1 "Category" record for each possibility*/
+ON('validate-record', function (event) {
+/*array of values that must exist in the repeatable records*/
+  var mincats = ['Exterior', 'Garage', 'Roof', 'Attic', 'Bathroom', 'Kitchen', 'Interior', 'Basement', 'Structure', 'Plumbing', 'Electrical', 'HVAC']
+  if ($categories) {
+  /*current category values in the repeatable section*/
+    var cats = REPEATABLEVALUES($categories, 'category').map(CHOICEVALUE);
+    /*get the difference between mincats and cats*/
+    var diff = mincats.filter(function (item) {
+      return !cats.includes(item);
+    });
+    /*if values exist in mincats that don't exist in cats then we're missing at least 1 value*/
+    if (diff.length > 0) {
+      INVALID('You must have at least 1 record for each of the following categories: \
+[Exterior, Garage, Roof, Attic, Bathroom, Kitchen, Interior, Basement, Structure,\
+Plumbing, Electrical, HVAC]. \n\n\
+Missing value(s) for ' + diff.join(', '));
+    }
+  } else {
+  INVALID('You have not added any category records');
+  }
+});
